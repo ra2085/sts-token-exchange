@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<APIProxy revision="1" name="mcp-bq-sts-exchange">
+    <DisplayName>mcp-bq-sts-exchange</DisplayName>
+    <Description>Apigee X proxy that exchanges 3LO IdP JWTs for Google Cloud Workforce Identity Pool STS access tokens and forwards MCP traffic to BigQuery</Description>
+    <Policies>
+        <Policy>AC-ValidateAuthHeader</Policy>
+        <Policy>AC-ValidateMcpRequest</Policy>
+        <Policy>AM-EnforceSecurityHeaders</Policy>
+        <Policy>AM-ExtractStsToken</Policy>
+        <Policy>AM-FormatAuthError</Policy>
+        <Policy>AM-FormatBadRequestError</Policy>
+        <Policy>AM-PrepareRequestAndCacheKey</Policy>
+        <Policy>AM-SanitizeGenericError</Policy>
+        <Policy>AM-SetTargetStsAuth</Policy>
+        <Policy>EV-ExtractBearerToken</Policy>
+        <Policy>JTP-ProtectMcpPayload</Policy>
+        <Policy>LC-LookupStsToken</Policy>
+        <Policy>PC-PopulateStsToken</Policy>
+        <Policy>SC-ExchangeStsToken</Policy>
+    </Policies>
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <Resources>
+        <Resource>properties://sts.properties</Resource>
+    </Resources>
+    <TargetEndpoints>
+        <TargetEndpoint>default</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>

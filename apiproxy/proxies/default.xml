@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ProxyEndpoint name="default">
+    <Description>MCP ProxyEndpoint performing Workforce Identity STS Token Exchange before forwarding to BigQuery MCP</Description>
+    <!--
+      NOTE: ProxyEndpoint evaluates FaultRules BOTTOM-UP (from the last FaultRule in XML to the first).
+      Specific FaultRules use AssignMessage (never RaiseFault) so FlowState.ERROR does not transition
+      to FlowState.ABORT and skip DefaultFaultRule.
+    -->
+    <FaultRules>
+        <FaultRule name="FR-BadRequestError">
+            <Condition>(fault.name = "AssertionFailed" and assertcondition.AC-ValidateMcpRequest.failed = true) or jsonthreatprotection.JTP-ProtectMcpPayload.failed = true</Condition>
+            <Step>
+                <Name>AM-FormatBadRequestError</Name>
+            </Step>
+        </FaultRule>
+        <FaultRule name="FR-AuthenticationAndStsExchangeError">
+            <Condition>(fault.name = "AssertionFailed" and assertcondition.AC-ValidateAuthHeader.failed = true) or extractvariables.EV-ExtractBearerToken.failed = true or servicecallout.SC-ExchangeStsToken.failed = true or fault.name = "ExecutionFailed" or fault.name = "UnresolvedVariable"</Condition>
+            <Step>
+                <Name>AM-FormatAuthError</Name>
+            </Step>
+        </FaultRule>
+    </FaultRules>
+    <DefaultFaultRule name="DFR-ZeroLeakSanitizer">
+        <AlwaysEnforce>true</AlwaysEnforce>
+        <Step>
+            <Name>AM-SanitizeGenericError</Name>
+            <Condition>sanitized_error_applied != true</Condition>
+        </Step>
+        <Step>
+            <Name>AM-EnforceSecurityHeaders</Name>
+        </Step>
+    </DefaultFaultRule>
+    <PreFlow name="PreFlow">
+        <Request>
+            <!-- 1. Validate HTTP Method, Path Traversal, and Content-Type/Size before payload inspection -->
+            <Step>
+                <Name>AC-ValidateMcpRequest</Name>
+            </Step>
+            <!-- 2. Enforce structural JSON bounds on POST requests -->
+            <Step>
+                <Name>JTP-ProtectMcpPayload</Name>
+                <Condition>request.verb = "POST"</Condition>
+            </Step>
+            <!-- 3. Validate presence of a single Bearer Authorization header (blocks Header Pollution) -->
+            <Step>
+                <Name>AC-ValidateAuthHeader</Name>
+            </Step>
+            <!-- 4. Extract 3LO IdP JWT into private.idp_subject_token (masked in Trace) -->
+            <Step>
+                <Name>EV-ExtractBearerToken</Name>
+            </Step>
+            <!-- 5. Strip spoofed headers, resolve PropertySet config, and compute SHA-256 token cache key on NIO thread -->
+            <Step>
+                <Name>AM-PrepareRequestAndCacheKey</Name>
+            </Step>
+            <!-- 6. Check L1/L2 Cache for an active STS Workforce access token for this IdP token -->
+            <Step>
+                <Name>LC-LookupStsToken</Name>
+            </Step>
+            <!-- 7. On cache miss, exchange the IdP JWT for a Workforce Identity Pool STS access token -->
+            <Step>
+                <Name>SC-ExchangeStsToken</Name>
+                <Condition>lookupcache.LC-LookupStsToken.cachehit = false</Condition>
+            </Step>
+            <!-- 8. Extract $.access_token from private.sts.response.content on the NIO thread -->
+            <Step>
+                <Name>AM-ExtractStsToken</Name>
+                <Condition>lookupcache.LC-LookupStsToken.cachehit = false</Condition>
+            </Step>
+            <!-- 9. Populate L1/L2 Cache with the exchanged STS access token -->
+            <Step>
+                <Name>PC-PopulateStsToken</Name>
+                <Condition>lookupcache.LC-LookupStsToken.cachehit = false and private.sts.access_token != null</Condition>
+            </Step>
+        </Request>
+        <Response/>
+    </PreFlow>
+    <Flows/>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response>
+            <Step>
+                <Name>AM-EnforceSecurityHeaders</Name>
+            </Step>
+        </Response>
+    </PostFlow>
+    <HTTPProxyConnection>
+        <BasePath>/mcp</BasePath>
+    </HTTPProxyConnection>
+    <RouteRule name="default">
+        <TargetEndpoint>default</TargetEndpoint>
+    </RouteRule>
+</ProxyEndpoint>

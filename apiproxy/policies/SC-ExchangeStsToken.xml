@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceCallout async="false" continueOnError="false" enabled="true" name="SC-ExchangeStsToken">
+    <DisplayName>SC-ExchangeStsToken</DisplayName>
+    <!--
+      clearPayload="true" on a dedicated private.sts.request variable ensures the inbound MCP request
+      payload (request.content) is never overwritten or unnecessarily buffered by ServiceCallout.
+      All template interpolations use {escapeJSON(...)} to prevent JSON injection.
+    -->
+    <Request clearPayload="true" variable="private.sts.request">
+        <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+        <Set>
+            <Verb>POST</Verb>
+            <Headers>
+                <Header name="Content-Type">application/json</Header>
+                <Header name="Accept">application/json</Header>
+            </Headers>
+            <Payload contentType="application/json">{
+  "grantType": "{escapeJSON(sts.grant_type)}",
+  "audience": "{escapeJSON(sts.audience)}",
+  "scope": "{escapeJSON(sts.scope)}",
+  "requestedTokenType": "{escapeJSON(sts.requested_token_type)}",
+  "subjectToken": "{escapeJSON(private.idp_subject_token)}",
+  "subjectTokenType": "{escapeJSON(sts.subject_token_type)}",
+  "options": "{escapeJSON(sts.options_json)}"
+}</Payload>
+        </Set>
+    </Request>
+    <!-- Store STS response in private.* namespace so the returned access_token is masked in Debug/Trace -->
+    <Response>private.sts.response</Response>
+    <Timeout>10000</Timeout>
+    <HTTPTargetConnection>
+        <SSLInfo>
+            <Enabled>true</Enabled>
+            <Enforce>true</Enforce>
+            <IgnoreValidationErrors>false</IgnoreValidationErrors>
+        </SSLInfo>
+        <URL>https://sts.googleapis.com/v1/token</URL>
+        <Properties>
+            <Property name="connect.timeout.millis">5000</Property>
+            <Property name="io.timeout.millis">10000</Property>
+            <Property name="keepalive.timeout.millis">50000</Property>
+        </Properties>
+    </HTTPTargetConnection>
+</ServiceCallout>

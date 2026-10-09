@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-ExtractStsToken">
+    <DisplayName>AM-ExtractStsToken</DisplayName>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <!--
+      Extract $.access_token inline on the NIO thread using MessageTemplate's cached jsonPath()
+      function, avoiding an extra @UseMainThreadPool hop from ExtractVariables.
+    -->
+    <AssignVariable>
+        <Name>private.sts.access_token</Name>
+        <Template>{jsonPath($.access_token,private.sts.response.content)}</Template>
+    </AssignVariable>
+</AssignMessage>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<LookupCache async="false" continueOnError="false" enabled="true" name="LC-LookupStsToken">
+    <DisplayName>LC-LookupStsToken</DisplayName>
+    <CacheKey>
+        <Prefix>sts_wf_token</Prefix>
+        <KeyFragment ref="sts.workforce_pool_id"/>
+        <KeyFragment ref="sts.workforce_provider_id"/>
+        <KeyFragment ref="sts.user_project"/>
+        <KeyFragment ref="sts.subject_token_hash"/>
+    </CacheKey>
+    <Scope>Exclusive</Scope>
+    <!-- Assign directly to private.* so cached token remains masked in Apigee Debug/Trace -->
+    <AssignTo>private.sts.access_token</AssignTo>
+</LookupCache>

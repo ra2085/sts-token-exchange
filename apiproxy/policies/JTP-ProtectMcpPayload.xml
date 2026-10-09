@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<JSONThreatProtection async="false" continueOnError="false" enabled="true" name="JTP-ProtectMcpPayload">
+    <DisplayName>JTP-ProtectMcpPayload</DisplayName>
+    <ArrayElementCount>200</ArrayElementCount>
+    <ContainerDepth>15</ContainerDepth>
+    <ObjectEntryCount>100</ObjectEntryCount>
+    <ObjectEntryNameLength>128</ObjectEntryNameLength>
+    <StringValueLength>65536</StringValueLength>
+    <Source>request</Source>
+</JSONThreatProtection>

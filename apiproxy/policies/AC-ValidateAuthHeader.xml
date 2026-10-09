@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssertCondition async="false" continueOnError="false" enabled="true" name="AC-ValidateAuthHeader">
+    <DisplayName>AC-ValidateAuthHeader</DisplayName>
+    <!-- Enforce presence of a single Authorization header starting with 'Bearer ' (blocks HTTP Header Pollution) -->
+    <Condition>request.header.Authorization != null and request.header.Authorization.values.count = 1 and request.header.Authorization =| "Bearer "</Condition>
+</AssertCondition>

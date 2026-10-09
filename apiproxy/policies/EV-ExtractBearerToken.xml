@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-ExtractBearerToken">
+    <DisplayName>EV-ExtractBearerToken</DisplayName>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <Source clearPayload="false">request</Source>
+    <!-- Store extracted IdP JWT in private.* namespace so it is automatically masked in Apigee Debug/Trace -->
+    <VariablePrefix>private</VariablePrefix>
+    <Header name="Authorization">
+        <Pattern ignoreCase="true">Bearer {idp_subject_token}</Pattern>
+    </Header>
+</ExtractVariables>

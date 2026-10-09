@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-EnforceSecurityHeaders">
+    <DisplayName>AM-EnforceSecurityHeaders</DisplayName>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <!-- Strip backend server fingerprint headers using explicit Header elements -->
+    <Remove>
+        <Headers>
+            <Header name="Server"/>
+            <Header name="X-Powered-By"/>
+            <Header name="X-Application-Context"/>
+            <Header name="X-Upstream-Env"/>
+        </Headers>
+    </Remove>
+    <Set>
+        <Headers>
+            <Header name="Cache-Control">no-store, no-cache, must-revalidate</Header>
+            <Header name="Pragma">no-cache</Header>
+            <Header name="X-Content-Type-Options">nosniff</Header>
+            <Header name="X-Frame-Options">DENY</Header>
+            <Header name="Strict-Transport-Security">max-age=63072000; includeSubDomains; preload</Header>
+            <Header name="Content-Security-Policy">default-src 'none'; frame-ancestors 'none'</Header>
+            <Header name="Permissions-Policy">camera=(), microphone=(), geolocation=()</Header>
+            <Header name="X-Correlation-ID">{messageid}</Header>
+        </Headers>
+    </Set>
+</AssignMessage>

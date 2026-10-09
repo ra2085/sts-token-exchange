@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssertCondition async="false" continueOnError="false" enabled="true" name="AC-ValidateMcpRequest">
+    <DisplayName>AC-ValidateMcpRequest</DisplayName>
+    <!--
+      1. Allow only Streamable HTTP MCP methods (POST, GET, DELETE).
+      2. Enforce Content-Type: application/json and bounded Content-Length on POST requests BEFORE JSONThreatProtection
+         to prevent the silent MediaTypeUtils.isJsonMessage() bypass.
+      3. Reject raw or URL-encoded path traversal sequences (.., %2e, %2f, %5c, ;).
+    -->
+    <Condition>(request.verb = "POST" or request.verb = "GET" or request.verb = "DELETE") and (request.verb != "POST" or (request.header.Content-Type =| "application/json" and (request.header.Content-Length = null or request.header.Content-Length &lt;= 262144))) and NOT (request.uri ~~ "(?i).*(\.\.|%2e|%2f|%5c|;).*")</Condition>
+</AssertCondition>

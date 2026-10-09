@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-SetTargetStsAuth">
+    <DisplayName>AM-SetTargetStsAuth</DisplayName>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <!--
+      1. Replace incoming 3LO IdP Authorization header with the exchanged Google Cloud STS access token.
+      2. Attach x-goog-user-project for BigQuery MCP quota/billing attribution.
+      3. Preserve /mcp basepath + validated pathsuffix when forwarding to https://bigquery.googleapis.com.
+    -->
+    <Set>
+        <Headers>
+            <Header name="Authorization">Bearer {private.sts.access_token}</Header>
+            <Header name="x-goog-user-project">{sts.user_project}</Header>
+        </Headers>
+    </Set>
+    <AssignVariable>
+        <Name>target.copy.pathsuffix</Name>
+        <Value>false</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>target.url</Name>
+        <Template>https://bigquery.googleapis.com{proxy.basepath}{proxy.pathsuffix}</Template>
+    </AssignVariable>
+</AssignMessage>

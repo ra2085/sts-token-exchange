@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-FormatBadRequestError">
+    <DisplayName>AM-FormatBadRequestError</DisplayName>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <Set>
+        <Headers>
+            <Header name="Content-Type">application/problem+json</Header>
+        </Headers>
+        <Payload contentType="application/problem+json">{
+  "type": "https://httpstatuses.io/400",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "The MCP request method, Content-Type, URI, or JSON structure failed gateway validation.",
+  "correlationId": "{escapeJSON(messageid)}"
+}</Payload>
+        <StatusCode>400</StatusCode>
+        <ReasonPhrase>Bad Request</ReasonPhrase>
+    </Set>
+    <AssignVariable>
+        <Name>sanitized_error_applied</Name>
+        <Value>true</Value>
+    </AssignVariable>
+</AssignMessage>

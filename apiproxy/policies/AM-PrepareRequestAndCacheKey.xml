@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-PrepareRequestAndCacheKey">
+    <DisplayName>AM-PrepareRequestAndCacheKey</DisplayName>
+    <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+    <!-- 1. Strip any client-supplied internal or billing headers to prevent header spoofing -->
+    <Remove>
+        <Headers>
+            <Header name="x-goog-user-project"/>
+            <Header name="X-Forwarded-Authorization"/>
+            <Header name="X-User-Id"/>
+            <Header name="X-Tenant-Id"/>
+        </Headers>
+    </Remove>
+    <!-- 2. Resolve STS Workforce Pool parameters from PropertySet (O(1) lookup on NIO thread) -->
+    <AssignVariable>
+        <Name>sts.workforce_pool_id</Name>
+        <Ref>propertyset.sts.workforce_pool_id</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.workforce_provider_id</Name>
+        <Ref>propertyset.sts.workforce_provider_id</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.user_project</Name>
+        <Ref>propertyset.sts.user_project</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.grant_type</Name>
+        <Template>{firstnonnull(propertyset.sts.grant_type,'urn:ietf:params:oauth:grant-type:token-exchange')}</Template>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.scope</Name>
+        <Template>{firstnonnull(propertyset.sts.scope,'https://www.googleapis.com/auth/cloud-platform')}</Template>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.requested_token_type</Name>
+        <Template>{firstnonnull(propertyset.sts.requested_token_type,'urn:ietf:params:oauth:token-type:access_token')}</Template>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.subject_token_type</Name>
+        <Template>{firstnonnull(propertyset.sts.subject_token_type,'urn:ietf:params:oauth:token-type:jwt')}</Template>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.cache_ttl_sec</Name>
+        <Template>{firstnonnull(propertyset.sts.cache_ttl_sec,'3000')}</Template>
+    </AssignVariable>
+    <!-- 3. Construct STS Workforce Identity Pool audience and JSON-serialized options -->
+    <AssignVariable>
+        <Name>sts.audience</Name>
+        <Template>//iam.googleapis.com/locations/global/workforcePools/{sts.workforce_pool_id}/providers/{sts.workforce_provider_id}</Template>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.options_json</Name>
+        <Template>{"userProject":"{escapeJSON(sts.user_project)}"}</Template>
+    </AssignVariable>
+    <!-- 4. Compute SHA-256 hex digest of the subject token on the NIO thread for safe cache keying -->
+    <AssignVariable>
+        <Name>sts.subject_token_hash</Name>
+        <Template>{sha256Hex(private.idp_subject_token)}</Template>
+    </AssignVariable>
+</AssignMessage>

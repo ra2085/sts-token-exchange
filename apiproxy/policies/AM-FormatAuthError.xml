@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-FormatAuthError">
+    <DisplayName>AM-FormatAuthError</DisplayName>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <Set>
+        <Headers>
+            <Header name="Content-Type">application/problem+json</Header>
+            <Header name="WWW-Authenticate">Bearer error="invalid_token", error_description="Missing, malformed, or rejected Bearer token during STS Workforce token exchange"</Header>
+        </Headers>
+        <Payload contentType="application/problem+json">{
+  "type": "https://httpstatuses.io/401",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "Authentication failed or token exchange with Google Cloud STS was rejected.",
+  "correlationId": "{escapeJSON(messageid)}"
+}</Payload>
+        <StatusCode>401</StatusCode>
+        <ReasonPhrase>Unauthorized</ReasonPhrase>
+    </Set>
+    <AssignVariable>
+        <Name>sanitized_error_applied</Name>
+        <Value>true</Value>
+    </AssignVariable>
+</AssignMessage>
