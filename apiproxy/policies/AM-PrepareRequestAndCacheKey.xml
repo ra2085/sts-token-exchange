@@ -24,25 +24,51 @@
         <Name>sts.user_project</Name>
         <Ref>propertyset.sts.user_project</Ref>
     </AssignVariable>
+    <!--
+      Define literal fallback values via <Value> (not parsed as MessageTemplate) before calling
+      {firstnonnull(propertyset.sts.*, sts.default_*)}. In Apigee's MessageTemplate parser, colons (:)
+      and slashes (/) inside literal function arguments trigger {var:default} splitting or fail function
+      tokenization (corrupting 'urn:ietf:...' into "propertyset.sts.*,'urn" and leaving 'https://...' raw).
+    -->
+    <AssignVariable>
+        <Name>sts.default_grant_type</Name>
+        <Value>urn:ietf:params:oauth:grant-type:token-exchange</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.default_scope</Name>
+        <Value>https://www.googleapis.com/auth/cloud-platform</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.default_requested_token_type</Name>
+        <Value>urn:ietf:params:oauth:token-type:access_token</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.default_subject_token_type</Name>
+        <Value>urn:ietf:params:oauth:token-type:jwt</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sts.default_cache_ttl_sec</Name>
+        <Value>3000</Value>
+    </AssignVariable>
     <AssignVariable>
         <Name>sts.grant_type</Name>
-        <Template>{firstnonnull(propertyset.sts.grant_type,'urn:ietf:params:oauth:grant-type:token-exchange')}</Template>
+        <Template>{firstnonnull(propertyset.sts.grant_type,sts.default_grant_type)}</Template>
     </AssignVariable>
     <AssignVariable>
         <Name>sts.scope</Name>
-        <Template>{firstnonnull(propertyset.sts.scope,'https://www.googleapis.com/auth/cloud-platform')}</Template>
+        <Template>{firstnonnull(propertyset.sts.scope,sts.default_scope)}</Template>
     </AssignVariable>
     <AssignVariable>
         <Name>sts.requested_token_type</Name>
-        <Template>{firstnonnull(propertyset.sts.requested_token_type,'urn:ietf:params:oauth:token-type:access_token')}</Template>
+        <Template>{firstnonnull(propertyset.sts.requested_token_type,sts.default_requested_token_type)}</Template>
     </AssignVariable>
     <AssignVariable>
         <Name>sts.subject_token_type</Name>
-        <Template>{firstnonnull(propertyset.sts.subject_token_type,'urn:ietf:params:oauth:token-type:jwt')}</Template>
+        <Template>{firstnonnull(propertyset.sts.subject_token_type,sts.default_subject_token_type)}</Template>
     </AssignVariable>
     <AssignVariable>
         <Name>sts.cache_ttl_sec</Name>
-        <Template>{firstnonnull(propertyset.sts.cache_ttl_sec,'3000')}</Template>
+        <Template>{firstnonnull(propertyset.sts.cache_ttl_sec,sts.default_cache_ttl_sec)}</Template>
     </AssignVariable>
     <!-- 3. Construct STS Workforce Identity Pool audience and JSON-serialized options -->
     <AssignVariable>

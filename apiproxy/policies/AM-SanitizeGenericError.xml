@@ -9,10 +9,10 @@
         <Payload contentType="application/problem+json">{
   "type": "https://httpstatuses.io/{firstnonnull(error.status.code,'500')}",
   "title": "Request processing failed",
-  "status": {firstnonnull(error.status.code,500)},
+  "status": {firstnonnull(error.status.code,'500')},
   "correlationId": "{escapeJSON(messageid)}"
 }</Payload>
-        <StatusCode>{firstnonnull(error.status.code,500)}</StatusCode>
+        <StatusCode>{firstnonnull(error.status.code,'500')}</StatusCode>
     </Set>
     <AssignVariable>
         <Name>sanitized_error_applied</Name>
