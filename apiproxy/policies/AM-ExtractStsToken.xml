@@ -8,6 +8,6 @@
     -->
     <AssignVariable>
         <Name>private.sts.access_token</Name>
-        <Template>{jsonPath($.access_token,private.sts.response.content)}</Template>
+        <Template>{jsonPath('$.access_token',private.sts.response.content)}</Template>
     </AssignVariable>
 </AssignMessage>

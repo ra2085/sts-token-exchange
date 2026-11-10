@@ -70,7 +70,7 @@
             <!-- 9. Populate L1/L2 Cache with the exchanged STS access token -->
             <Step>
                 <Name>PC-PopulateStsToken</Name>
-                <Condition>lookupcache.LC-LookupStsToken.cachehit = false and private.sts.access_token != null</Condition>
+                <Condition>lookupcache.LC-LookupStsToken.cachehit = false and private.sts.access_token != null and private.sts.access_token != ""</Condition>
             </Step>
         </Request>
         <Response/>

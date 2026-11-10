@@ -5,7 +5,6 @@
     <!--
       1. Replace incoming 3LO IdP Authorization header with the exchanged Google Cloud STS access token.
       2. Attach x-goog-user-project for BigQuery MCP quota/billing attribution.
-      3. Preserve /mcp basepath + validated pathsuffix when forwarding to https://bigquery.googleapis.com.
     -->
     <Set>
         <Headers>
@@ -13,12 +12,4 @@
             <Header name="x-goog-user-project">{sts.user_project}</Header>
         </Headers>
     </Set>
-    <AssignVariable>
-        <Name>target.copy.pathsuffix</Name>
-        <Value>false</Value>
-    </AssignVariable>
-    <AssignVariable>
-        <Name>target.url</Name>
-        <Template>https://bigquery.googleapis.com{proxy.basepath}{proxy.pathsuffix}</Template>
-    </AssignVariable>
 </AssignMessage>

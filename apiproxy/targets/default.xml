@@ -33,7 +33,7 @@
             <Enforce>true</Enforce>
             <IgnoreValidationErrors>false</IgnoreValidationErrors>
         </SSLInfo>
-        <URL>https://bigquery.googleapis.com</URL>
+        <URL>https://bigquery.googleapis.com/mcp</URL>
         <Properties>
             <Property name="success.codes">1xx,2xx,3xx,4xx</Property>
             <Property name="HTTPHeader.allowDuplicates">Content-Type,content-type,Authorization</Property>
